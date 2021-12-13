@@ -1,0 +1,21 @@
+version: "3"
+services:
+  test.net:
+    container_name: file_cms
+    hostname: test.net
+    image: unlikelysource/file_cms
+    volumes:
+     - ".:/repo"
+    ports:
+     - "8888:80"
+    build: .
+    restart: always
+    networks:
+      app_net:
+        ipv4_address: 10.10.10.10
+networks:
+  app_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.10.10.0/24"

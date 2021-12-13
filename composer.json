@@ -1,0 +1,16 @@
+{
+    "require": {
+        "phpmailer/phpmailer" : "^6.1",
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "FileCMS\\" : "src/"
+        }
+    },
+    "autoload-dev" : {
+        "psr-4" : {
+            "FileCMSTest\\" : "tests/"
+        }
+    }
+}
