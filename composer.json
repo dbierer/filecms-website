@@ -1,6 +1,6 @@
 {
     "name": "unlikelysource/filecms-website",
-    "description": "Basic Bootstrap skeleton website for FileCMS",
+    "description": "File-based content management system.  Does not require a database.",
     "license": "Apache-2.0",
     "authors": [
         {
