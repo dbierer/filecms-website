@@ -1,4 +1,4 @@
-# FileCMS
+# FileCMS Website
 Really simple PHP app that builds HTML files from HTML widgets.
 * Includes a class that can generate and validate CAPTCHAs (uses the GD extension).
 * Includes the CKEditor for full-featured editing.
@@ -12,15 +12,26 @@ Really simple PHP app that builds HTML files from HTML widgets.
 License: Apache v2
 
 ## Initial Installation
-1. Clone this repository to the project root of your new website.
-2. Use composer to install 3rd party source code (e.g. PHPMailer)
+1. Clone the `filecms-website` repository to the project root of your new website.
+  * If you have `git` installed run this command from a command prompt / terminal window:
 ```
+git clone https://github.com/dbierer/filecms-website.git /path/to/website
+```
+  * If you don't have `git` installed, just download the ZIP file from:
+```
+https://github.com/dbierer/filecms-website/archive/refs/heads/main.zip
+```
+  * And unzip into `/path/to/website`
+2. Use composer to install `unlikelysource/filecms-core` and 3rd party source code (e.g. PHPMailer)
+```
+cd /path/to/website
 wget https://getcomposer.org/download/latest-stable/composer.phar
 php composer.phar self-update
 php composer.phar install
 ```
 
 ## Basic website config
+All references are from `/path/to/website`:
 * Open `/src/config/config.php`
   * Modify configuration to suit your needs
   * Use `/src/config/config.php.dist` as a guide
@@ -33,6 +44,7 @@ php composer.phar install
 ## To Run Locally Using PHP
 From this directory, run the following command:
 ```
+cd /path/to/website
 php -S localhost:8888 -t public
 ```
 
@@ -45,6 +57,7 @@ Open the Power Shell (some commands don't work in the regular command prompt)
 
 To bring the docker container online, run this command:
 ```
+cd \path\to\website
 admin up
 ```
 To stop the container do this:
@@ -68,6 +81,7 @@ Open a terminal window (Terminal Application)
 
 To bring the docker container online, run this command:
 ```
+cd /path/to/website
 ./admin.sh up
 ```
 To stop the container do this:

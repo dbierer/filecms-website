@@ -1,16 +1,29 @@
 {
+    "name": "unlikelysource/filecms-website",
+    "description": "Basic Bootstrap skeleton website for FileCMS",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Doug Bierer",
+            "email": "doug@unlikelysource.com",
+            "homepage": "https://unlikelysource.com/",
+            "role": "Developer"
+        }
+    ],
+    "keywords": [
+        "unlikelysource",
+        "CMS",
+        "file based",
+        "FileCMS"
+    ],
+    "homepage": "https://unlikelysource.com/filecms",
+    "support": {
+        "docs": "https://github.com/dbierer/filecms-website/blob/main/README.md",
+        "issues": "https://github.com/dbierer/filecms-website/issues",
+        "source": "https://github.com/dbierer/filecms-website"
+    },
     "require": {
-        "phpmailer/phpmailer" : "^6.1",
-        "phpunit/phpunit": "^9.5"
-    },
-    "autoload" : {
-        "psr-4" : {
-            "FileCMS\\" : "src/"
-        }
-    },
-    "autoload-dev" : {
-        "psr-4" : {
-            "FileCMSTest\\" : "tests/"
-        }
+        "php" : ">=7.4",
+        "unlikelysource/filecms-core": "^0.1.1"
     }
 }
