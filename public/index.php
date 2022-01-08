@@ -1,10 +1,7 @@
 <?php
-require __DIR__ . '/../bootstrap.php';
+$config = require __DIR__ . '/../bootstrap.php';
 use FileCMS\Common\View\Html;
 use FileCMS\Common\Generic\Messages;
-
-// grab config
-$config = include SRC_DIR . '/config/config.php';
 
 // init vars
 $body = '';

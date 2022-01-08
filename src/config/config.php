@@ -223,7 +223,7 @@ $config = [
         'img_url'     => '/images',
         'thumb_dir'   => BASE_DIR . '/public/thumb',
         'thumb_url'   => '/thumb',
-        'allowed_types' => ['image/'],
+        'allowed_types' => ['image/'],  // allowed MIME type prefix
     ],
     'TRANSFORM' => [
         'enable' => TRUE,                      // change this to FALSE to disable this feature
