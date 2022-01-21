@@ -1,13 +1,15 @@
 <?php
 use FileCMS\Common\Image\Captcha;
-use FileCMS\Common\Contact\{Email,Storage};
-use FileCMSTest\Common\Security\{Filter,Validation};
+use FileCMS\Common\Contact\Email;
+use FileCMS\Common\Data\Storage;
+use FileCMS\Common\Security\{Filter,Validation};
 // process contact post (if any)
 // $OBJ == calling instance
 if (!empty($OBJ)) {
     $uri    = $OBJ->uri;
     $config = $OBJ->config;
 }
+$msg = '';
 $fields = $config['COMPANY_EMAIL']['fields'] ?? [];
 if ($_POST) {
     $body = '';
@@ -41,13 +43,13 @@ if ($_POST) {
             }
             // send sanitized email data
             $msg = Email::processPost($config, $inputs, $body);
-            $store    = $config['STORAGE']['db_enabled'] ?? FALSE;
-            $store    = (bool) $store;
-            // store message in database
-            if ($store) {
-                $storage = new Storage($config);
-                $storage->save('contacts', $inputs);
-            }
+
+            // store message in file
+            // default is CSV, append mode
+            // set STORAGE::storage_fmt = "php|json" in config file if CSV not desired
+            $store = new Storage($config);
+            $storage->save($inputs);
+
             // log body + message
             $body .= ($msg) ? "\n$msg\n" : '';
             if ($body) {
@@ -89,7 +91,7 @@ $_SESSION[$hashKey] = $hash;
             </div>
             <!-- end message -->
             <!-- Contacts Form -->
-            <form class="contact_form" action="mail.php">
+            <form class="contact_form" action="/contact" method="post">
                 <div class="row">
                     <?php if (empty($fields)) : ?>
                         <?php include __DIR__ . '/../layout/contact.html'; ?>

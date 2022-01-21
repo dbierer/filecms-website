@@ -13,17 +13,16 @@ if (strpos($uri, $super_url) === 0) {
             $html = new Html($config, $uri, $super_dir);
             echo $html->render();
             exit;
+        case ($uri === $super_url . '/logout') :
         case ($uri === $super_url . '/quick_upload') :
         case ($uri === $super_url . '/choose') :
         case ($uri === $super_url . '/edit')   :
         case ($uri === $super_url . '/import') :
         case ($uri === $super_url . '/transform') :
-        case ($uri === $super_url . '/logout') :
             // check to see if authenticated
-            $message = Messages::getInstance();
             if (Profile::verify($config) === FALSE) {
                 Profile::logout();
-                $message->addMessage(Messages::ERROR_AUTH);
+                (Messages::getInstance())->addMessage(Messages::ERROR_AUTH);
                 header('Location: /');
                 exit;
             }

@@ -9,11 +9,10 @@ if (!empty($OBJ)) {
     $config = $OBJ->config;
 }
 // check to see if authenticated
-$message  = Messages::getInstance();
 if (Profile::verify($config) === FALSE) {
     Profile::logout();
-    $message->addMessage('Unable to authenticate');
-    header('Location: /');
+    (Messages::getInstance())->addMessage('Unable to authenticate');
+    echo '<h1>Unable to authenticate</h1>';
     exit;
 }
 $browse = new Browse($config);

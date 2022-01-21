@@ -5,8 +5,17 @@ $config = [
     'HOME'   => 'home.phtml',   // default home page
     'HOST'   => '',
     'DELIM'  => '%%',
+    'MSG_MARKER'  => '<!-- %%MESSAGES%% -->',
+    'CONTACT_LOG' => BASE_DIR . '/logs/contact.log',
     // use '' for CACHE if you want to disable it
     'CACHE'  => BASE_DIR . '/data/cache.txt',
+    'CAPTCHA' => [
+        'input_tag_name' => 'phrase',
+        'sess_hash_key'  => 'hash',
+        'font_file'      => SRC_DIR . '/fonts/FreeSansBold.ttf',
+        'img_dir'        => BASE_DIR . '/public/img/captcha',
+        'num_bytes'      => 2,
+    ],
     'META' => [
         'default' => [
             'title' => 'FileCMS',
@@ -53,21 +62,17 @@ $config = [
         'backup_cmd' => BASE_DIR . 'zip -r %%BACKUP_FN%% %%BACKUP_SRC%%',
     ],
     /*
-     * Storage settings are optional
-     * Can be used if you want to also incorporate a database
+     * File based storage
+     * Can be used if you need persistent storage
+     *
+     * If "storage_fmt" param === "php" uses native PHP serialization
+     * If "storage_fmt" param === "json" uses JSON encoding
+     * If "storage_fmt" param === "csv" uses CSV encoding
      */
     'STORAGE' => [
-        // set this to 1 to enable database
-        'db_enabled' => 0,
-        'db_host' => 'localhost',
-        'db_name' => 'REPL_DB_NAME',
-        'db_user' => 'REPL_DB_USER',
-        'db_pwd'  => 'REPL_DB_PWD',
-        // set this to 1 to enable automated backups using /backup.sh
-        'db_backup_enabled' => 0,
-        'db_backup_dir' => BASE_DIR . '/backups',
-        // backup command for your database
-        'db_cmd' => 'mysqldump -u%%REPL_DB_USER%% -p%%REPL_DB_PWD%% %%REPL_DB_NAME%%',
+        'storage_fmt' => 'csv',  // can be php|json|csv
+        'storage_dir' => BASE_DIR . '/data',
+        'storage_fn'  => 'contacts.txt',
     ],
     /*
      * These settings are primarily used for the email contact form
@@ -201,15 +206,6 @@ $config = [
                 ],
             ],
         ],
-    ],
-    'MSG_MARKER'  => '<!-- %%MESSAGES%% -->',
-    'CONTACT_LOG' => BASE_DIR . '/logs/contact.log',
-    'CAPTCHA' => [
-        'input_tag_name' => 'phrase',
-        'sess_hash_key'  => 'hash',
-        'font_file'      => SRC_DIR . '/fonts/FreeSansBold.ttf',
-        'img_dir'        => BASE_DIR . '/public/img/captcha',
-        'num_bytes'      => 2,
     ],
     'UPLOADS' => [
         'restrict_size' => TRUE,    // set to FALSE to ignore size restrictions

@@ -19,6 +19,7 @@ try {
     echo $html->render();
 } catch (Throwable $t) {
     (Messages::getInstance())->addMessage($t->getMessage());
+    error_log($t->getFile() . ':' . $t->getLine() . "\n" . $t->getTraceAsString());
     $html = new Html($config, '/error', HTML_DIR);
     echo $html->render();
 }

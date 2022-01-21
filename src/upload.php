@@ -9,15 +9,14 @@ if (!empty($OBJ)) {
     $config = $OBJ->config;
 }
 // check to see if authenticated
-$message  = Messages::getInstance();
+$upload = new Upload($config);
 if (Profile::verify($config) === FALSE) {
     Profile::logout();
-    $message->addMessage('Unable to authenticate');
-    header('Location: /');
-    exit;
+    (Messages::getInstance())->addMessage(Profile::PROFILE_AUTH_UNABLE);
+    $upload->errors[] = Profile::PROFILE_AUTH_UNABLE;
+    $response = $upload->getErrorResponse();
+} else {
+    $response = $upload->handle('upload');
 }
-$upload = new Upload($config);
-$response = $upload->handle('upload');
 header('Content-type: application/json');
 echo json_encode($response);
-

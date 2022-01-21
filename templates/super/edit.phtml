@@ -112,7 +112,16 @@ $msg = $message->getMessages() ?? Messages::EDIT;
                                 &nbsp;
                                 <a target="_blank" href="<?= $key ?>" title="This link only works after you have saved your work" />PREVIEW</a>
                                 &nbsp;
+                                <?php $label = ($action === 'delete') ? 'Delete' : 'Save'; ?>
+                                <input name="save" type="submit" class="btn btn-primary btn-circled" value="<?= $label ?>">
+                                <?php if (!empty($backup_fn)) : ?>
+                                &nbsp;&nbsp;
+                                <input name="restore" type="submit" class="btn btn-primary btn-circled" value="Restore" title="Click here to restore from backup (if any exists)">
+                                <?php endif; ?>
+                                &nbsp;&nbsp;
                                 <input name="choose" type="submit" class="btn btn-primary btn-circled" value="Back" title="Click here to choose another page to work with">
+                                &nbsp;&nbsp;
+                                <input name="cancel" type="submit" class="btn btn-primary btn-circled" value="Cancel">
                             </div>
                         </div>
                     </div>
@@ -161,6 +170,8 @@ $msg = $message->getMessages() ?? Messages::EDIT;
                     <div class="col-sm-12 mb-12">
                         <div class="form-group">
                             <div class="input-group">
+                                <a target="_blank" href="<?= $key ?>" title="This link only works after you have saved your work" />PREVIEW</a>
+                                &nbsp;
                                 <?php $label = ($action === 'delete') ? 'Delete' : 'Save'; ?>
                                 <input name="save" type="submit" class="btn btn-primary btn-circled" value="<?= $label ?>">
                                 <?php if (!empty($backup_fn)) : ?>
@@ -181,6 +192,7 @@ $msg = $message->getMessages() ?? Messages::EDIT;
             <!-- End Edit Form -->
 
            <!-- form message -->
+           <?php if (!empty($msg)) : ?>
             <div class="row">
                 <div class="col-md-12">
                     <div class="alert alert-success contact__msg">
@@ -188,6 +200,7 @@ $msg = $message->getMessages() ?? Messages::EDIT;
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
             <!-- end message -->
 
         </div>
