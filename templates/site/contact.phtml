@@ -2,6 +2,7 @@
 use FileCMS\Common\Image\Captcha;
 use FileCMS\Common\Contact\Email;
 use FileCMS\Common\Data\Storage;
+use FileCMS\Common\Generic\Messages;
 use FileCMS\Common\Security\{Filter,Validation};
 // process contact post (if any)
 // $OBJ == calling instance
@@ -9,7 +10,7 @@ if (!empty($OBJ)) {
     $uri    = $OBJ->uri;
     $config = $OBJ->config;
 }
-$msg = '';
+$message = Messages::getInstance();
 $fields = $config['COMPANY_EMAIL']['fields'] ?? [];
 if ($_POST) {
     $body = '';
@@ -43,6 +44,7 @@ if ($_POST) {
             }
             // send sanitized email data
             $msg = Email::processPost($config, $inputs, $body);
+            $message->addMessage($msg);
 
             // store message in file
             // default is CSV, append mode
@@ -51,7 +53,7 @@ if ($_POST) {
             $storage->save($inputs);
 
             // log body + message
-            $body .= ($msg) ? "\n$msg\n" : '';
+            $body .= (!empty($msg)) ? "\n" . strip_tags($msg) . "\n" : '';
             if ($body) {
                 file_put_contents($log, $body, FILE_APPEND);
             }
@@ -65,6 +67,7 @@ $captcha = new Captcha($config['CAPTCHA']);
 $images  = $captcha->writeImages($token);
 $hash    = password_hash($captcha->phrase, PASSWORD_BCRYPT);
 $_SESSION[$hashKey] = $hash;
+$msg = $message->getMessages() ?? '';
 ?>
   <!-- Header -->
   <header class="bg-primary py-5 mb-5">
@@ -81,15 +84,17 @@ $_SESSION[$hashKey] = $hash;
   <div class="container">
     <div class="row">
         <div class="col-lg-6">
+           <?php if (!empty($msg)) : ?>
            <!-- form message -->
             <div class="row">
                 <div class="col-12">
-                    <div class="alert alert-success contact__msg" style="display: none" role="alert">
+                    <div class="alert alert-success contact__msg" role="alert">
                         <?= $msg ?>
                     </div>
                 </div>
             </div>
             <!-- end message -->
+            <?php endif; ?>
             <!-- Contacts Form -->
             <form class="contact_form" action="/contact" method="post">
                 <div class="row">
