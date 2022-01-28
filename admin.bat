@@ -57,6 +57,8 @@ GOTO:EOF
 IF "%1"=="demo" GOTO :demo
 GOTO :done
 :demo
+php composer.phar self-update
+php composer.phar install
 php -S localhost:8888 -t public
 GOTO:EOF
 

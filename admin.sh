@@ -24,6 +24,8 @@ elif [[ "$1" = "init" ]]; then
 elif [[ "$1" = "shell" ]]; then
     docker exec -it $CONTAINER /bin/bash
 elif [[ "$1" = "demo" ]]; then
+    php composer.phar self-update
+    php composer.phar install
     php -S localhost:8888 -t public
 else
     echo $USAGE
