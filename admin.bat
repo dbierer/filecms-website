@@ -1,5 +1,5 @@
 @echo off
-SET USAGE="Usage: init.sh up|down|build|ls|init|shell"
+SET USAGE="Usage: init.sh up|down|build|ls|init|demo|shell"
 SET CONTAINER="file_cms"
 SET INIT=0
 
@@ -47,10 +47,17 @@ GOTO:EOF
 
 :opt6
 IF "%1"=="shell" GOTO :shell
-GOTO :done
+GOTO :opt7
 :shell
 IF "%2"=="" GOTO :usage
 docker exec -it %CONTAINER% /bin/bash
+GOTO:EOF
+
+:opt7
+IF "%1"=="demo" GOTO :demo
+GOTO :done
+:demo
+php -S localhost:8888 -t public
 GOTO:EOF
 
 :done

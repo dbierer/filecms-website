@@ -1,6 +1,6 @@
 #!/bin/bash
 DIR=`pwd`
-export USAGE="Usage: init.sh up|down|build|ls|init|shell"
+export USAGE="Usage: init.sh up|down|build|ls|init|demo|shell"
 export CONTAINER="file_cms"
 export INIT=0
 if [[ -z "$1" ]]; then
@@ -23,6 +23,8 @@ elif [[ "$1" = "init" ]]; then
         docker exec $CONTAINER /bin/bash -c "/etc/init.d/httpd restart"
 elif [[ "$1" = "shell" ]]; then
     docker exec -it $CONTAINER /bin/bash
+elif [[ "$1" = "demo" ]]; then
+    php -S localhost:8888 -t public
 else
     echo $USAGE
     exit 1

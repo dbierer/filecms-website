@@ -68,6 +68,7 @@ $msg     = $message->getMessages() ?? Messages::CHOOSE;
         </div>
     </div><!-- row -->
 
+    <?php if (!empty($msg)) : ?>
     <div class="row">
         <div class="col-lg-12">
             <div class="alert alert-success contact__msg">
@@ -75,5 +76,6 @@ $msg     = $message->getMessages() ?? Messages::CHOOSE;
             </div>
         </div>
     </div>
+    <?php endif; ?>
 
   </div><!-- container -->

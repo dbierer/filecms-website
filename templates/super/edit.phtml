@@ -109,9 +109,9 @@ $msg = $message->getMessages() ?? Messages::EDIT;
 
                             <div>
                                 <input type="text" id="page_key" name="page_key" size=60 value="<?= $key ?>" />
-                                &nbsp;
+                                &nbsp;&nbsp;
                                 <a target="_blank" href="<?= $key ?>" title="This link only works after you have saved your work" />PREVIEW</a>
-                                &nbsp;
+                                &nbsp;&nbsp;
                                 <?php $label = ($action === 'delete') ? 'Delete' : 'Save'; ?>
                                 <input name="save" type="submit" class="btn btn-primary btn-circled" value="<?= $label ?>">
                                 <?php if (!empty($backup_fn)) : ?>
@@ -171,7 +171,7 @@ $msg = $message->getMessages() ?? Messages::EDIT;
                         <div class="form-group">
                             <div class="input-group">
                                 <a target="_blank" href="<?= $key ?>" title="This link only works after you have saved your work" />PREVIEW</a>
-                                &nbsp;
+                                &nbsp;&nbsp;
                                 <?php $label = ($action === 'delete') ? 'Delete' : 'Save'; ?>
                                 <input name="save" type="submit" class="btn btn-primary btn-circled" value="<?= $label ?>">
                                 <?php if (!empty($backup_fn)) : ?>
