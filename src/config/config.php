@@ -1,10 +1,14 @@
 <?php
+// change settings as needed and then copy to /src/config/config.php on your main website
+// use this skeleton project to set up your website (https://github.com/dbierer/filecms-website)
+// unlikelysource/filecms-core also contains a copy of this file
 $config = [
     'CARDS'  => 'cards',
     'LAYOUT' => BASE_DIR . '/templates/layout/layout.html',
     'HOME'   => 'home.phtml',   // default home page
     'HOST'   => '',
     'DELIM'  => '%%',
+    'CONTENTS' => '%%CONTENTS%%',
     'MSG_MARKER'  => '<!-- %%MESSAGES%% -->',
     'CONTACT_LOG' => BASE_DIR . '/logs/contact.log',
     // use '' for CACHE if you want to disable it

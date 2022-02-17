@@ -17,8 +17,9 @@ $message = Messages::getInstance();
 $msg     = $message->getMessages() ?? Messages::LOGIN;
 $other   = '';
 $super_url  = $config['SUPER']['super_url'] ?? Edit::DEFAULT_SUPER;
-$allowed_ip = $config['SUPER']['allowed_ip'] ?? [];
 $validation = $config['SUPER']['validation'] ?? [];
+// not used by default, but you can easily add this in
+$allowed_ip = $config['SUPER']['allowed_ip'] ?? [];
 $ip         = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
 if ($_POST) {
     // capture login params
@@ -40,8 +41,8 @@ if ($_POST) {
     $valid += (int) password_verify($phrase, $valid_hash);
     $valid += (int) ($other === $valid_other);
     if ($valid === $expected) {
-        // store md5 of selected $_SERVER array settings
-        Profile::set(Profile::build($config));
+        // store username + selected $_SERVER array settings
+        Profile::init($config, $name);
         // redirect to "super" area
         header('Location: /super/choose');
         exit;

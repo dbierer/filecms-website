@@ -6,6 +6,8 @@ use FileCMS\Common\Generic\Messages;
 $super_url = $config['SUPER']['super_url'] ?? '/super';
 $super_dir = $config['SUPER']['super_dir'] ?? BASE_DIR . '/templates/super';
 if (strpos($uri, $super_url) === 0) {
+    $body = '';
+    $cards = FALSE;
     switch (TRUE) {
         case ($uri === $super_url . '/login') :
             header('Content-Type: text/html');
@@ -29,7 +31,7 @@ if (strpos($uri, $super_url) === 0) {
             header('Content-Type: text/html');
             header('Content-Encoding: compress');
             $html = new Html($config, $uri, $super_dir);
-            echo $html->render();
+            echo $html->render($body, $cards);
             exit;
         case ($uri === $super_url . '/upload') :
             require SRC_DIR . '/upload.php';
