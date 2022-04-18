@@ -1,0 +1,11 @@
+[15-Apr-2022 09:44:31 Asia/Krasnoyarsk] /home/ned/Repos/FileCMS/filecms-website/src/processing.php:10
+#0 /home/ned/Repos/FileCMS/filecms-website/public/index.php(14): include()
+#1 {main}
+[15-Apr-2022 09:44:37 Asia/Krasnoyarsk] /home/ned/Repos/FileCMS/filecms-website/src/processing.php:10
+#0 /home/ned/Repos/FileCMS/filecms-website/public/index.php(14): include()
+#1 /home/ned/Repos/FileCMS/filecms-website/public/super/index.php(3): require('...')
+#2 {main}
+[15-Apr-2022 09:44:48 Asia/Krasnoyarsk] /home/ned/Repos/FileCMS/filecms-website/src/processing.php:10
+#0 /home/ned/Repos/FileCMS/filecms-website/public/index.php(14): include()
+#1 /home/ned/Repos/FileCMS/filecms-website/public/super/index.php(3): require('...')
+#2 {main}

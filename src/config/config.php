@@ -9,6 +9,7 @@ $config = [
     'HOST'   => '',
     'DELIM'  => '%%',
     'CONTENTS' => '%%CONTENTS%%',
+    'CLICK_CSV' => BASE_DIR . '/logs/clicks.csv',
     'MSG_MARKER'  => '<!-- %%MESSAGES%% -->',
     'CONTACT_LOG' => BASE_DIR . '/logs/contact.log',
     // use '' for CACHE if you want to disable it
@@ -34,7 +35,7 @@ $config = [
         'message'   => 'Sorry! Unable to login.  Please contact your administrator',
         // array of $_SERVER keys to store in session if authenticated
         // helps prevent forged attacks
-        'profile'  => ['REMOTE_ADDR','HTTP_USER_AGENT','HTTP_ACCEPT_LANGUAGE','HTTP_COOKIE'],
+        'profile'  => ['REMOTE_ADDR','HTTP_ACCEPT_LANGUAGE'],
         // change the values to reflect the names of fields in your login.phtml form
         'login_fields' => [
             'name'     => 'name',
