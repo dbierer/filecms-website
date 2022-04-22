@@ -1,8 +1,12 @@
 <?php
 // add pre-processing logic based on URL here:
 use FileCMS\Common\View\Html;
+use FileCMS\Common\Stats\Clicks;
 use FileCMS\Common\Security\Profile;
 use FileCMS\Common\Generic\Messages;
+Profile::$config = $config;
+$click_fn  = $config['CLICK_CSV'] ?? BASE_DIR . '/logs/clicks.csv';
+Clicks::add($uri, $click_fn);
 $super_url = $config['SUPER']['super_url'] ?? '/super';
 $super_dir = $config['SUPER']['super_dir'] ?? BASE_DIR . '/templates/super';
 if (strpos($uri, $super_url) === 0) {
@@ -22,7 +26,7 @@ if (strpos($uri, $super_url) === 0) {
         case ($uri === $super_url . '/import') :
         case ($uri === $super_url . '/transform') :
             // check to see if authenticated
-            if (Profile::verify($config) === FALSE) {
+            if (Profile::verify() === FALSE) {
                 Profile::logout();
                 (Messages::getInstance())->addMessage(Messages::ERROR_AUTH);
                 header('Location: /');

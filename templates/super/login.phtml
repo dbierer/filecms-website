@@ -11,7 +11,6 @@ if (!empty($OBJ)) {
     $uri    = $OBJ->uri;
     $config = $OBJ->config;
 }
-Profile::logout();
 $hashKey = $config['CAPTCHA']['sess_hash_key'] ?? 'hash';
 $message = Messages::getInstance();
 $msg     = $message->getMessages() ?? Messages::LOGIN;
@@ -41,8 +40,8 @@ if ($_POST) {
     $valid += (int) password_verify($phrase, $valid_hash);
     $valid += (int) ($other === $valid_other);
     if ($valid === $expected) {
-        // store username + selected $_SERVER array settings
-        Profile::init($config, $name);
+        // store selected $_SERVER array settings
+        Profile::init($config);
         // redirect to "super" area
         header('Location: /super/choose');
         exit;
