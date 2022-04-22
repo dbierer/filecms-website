@@ -33,8 +33,9 @@ $config = [
         'password'  => 'REPL_SUPER_PWD',   // fill in your password here
         'attempts'  => 3,
         'message'   => 'Sorry! Unable to login.  Please contact your administrator',
+        // reserved for future use:
+        'allowed_ip' => ['24.130.127.60','183.89.77.87'],
         // array of $_SERVER keys to store in session if authenticated
-        // helps prevent forged attacks
         'profile'  => ['REMOTE_ADDR','HTTP_ACCEPT_LANGUAGE'],
         // change the values to reflect the names of fields in your login.phtml form
         'login_fields' => [
