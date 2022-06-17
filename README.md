@@ -1,5 +1,7 @@
-# FileCMS Website
-Really simple PHP app that builds HTML files from HTML widgets.
+# FileCMS Website (v0.2.7)
+NOTE: formerly called _SimpleHtml_
+
+Simple PHP framework that builds HTML files from HTML widgets.
 * Includes a class that can generate and validate CAPTCHAs (uses the GD extension).
 * Includes the CKEditor for full-featured editing.
 * Includes an email contact form that uses PHPMailer.
@@ -8,11 +10,12 @@ Really simple PHP app that builds HTML files from HTML widgets.
 * Entirely file-based: does not require a database!
 * Very fast and flexible.
 * Once you've got it up and running, just upload HTML snippets and/or modify the configuration file.
+* Works on PHP 8.1
 
 License: Apache v2
 
 ## Initial Installation
-1. Clone the `filecms-website` repository to the project root of your new website.
+1. Clone the this repository to the project root of your new website.
   * If you have `git` installed run this command from a command prompt / terminal window:
 ```
 git clone https://github.com/dbierer/filecms-website.git /path/to/website
@@ -31,15 +34,13 @@ php composer.phar install
 ```
 
 ## Basic website config
-All references are from `/path/to/website`:
-* Open `/src/config/config.php`
-  * Modify configuration to suit your needs
-  * Use `/src/config/config.php.dist` as a guide
-* Open `/public/index.php`
-  * Modify the three global constants to suit your needs:
-    * `BASE_DIR`
-    * `HTML_DIR`
-    * `SRC_DIR`
+All references are from `/path/to/website`
+
+* Primary config file: `/src/config/config.php`
+* Bootstrap file: `/bootstrap.php`
+* Pre-processing code: `/src/processing.php`
+
+Additional documentation on these three follows.
 
 ## To Run Locally Using PHP
 From this directory, run the following command:
@@ -110,7 +111,7 @@ Set the website document root to `/public`
 * If you are using *nginx* you will need to incorporate the same logic into your primary config file
 * `/public/index.php` first loads the *bootstrap* file `/bootstrap.php`
   * This file defines three key constants used throughout the program (summarized in the table shown next)
-  * The bootstrap file also load the Composer autoloader
+  * The bootstrap file also loads the Composer autoloader
   * If you add your own classes under `/src` be sure to update `composer.json` and refresh Composer autoloading:
 ```
 composer dump-autoload
@@ -123,6 +124,11 @@ Here is a summary of the three key constants defined by `/bootstrap.php`.  Chang
 | HTML_DIR | `/templates/site` | Location of HTML snippets |
 | SRC_DIR  | `/src` | Location of source code |
 
+## Pre-Processing
+Before the final HTML view is rendered, `/public/index.php` includes `/src/processsing.php`.
+In this file you can include any pre-processing you need done.
+* The request URL is available as the variable `$uri`
+* This is where the admin URL (e.g. `/super`) is captured and sent to processing
 
 ## Templates
 By default templates are stored in `/templates/site`.  You can alter this in the config file.
@@ -179,7 +185,7 @@ Example configuration for super user:
     'attempts' => 3,
     'message'  => 'Sorry! Unable to login.  Please contact your administrator',
     // array of $_SERVER keys to store in session if authenticated
-    'profile'  => ['REMOTE_ADDR','HTTP_USER_AGENT','HTTP_ACCEPT_LANGUAGE','HTTP_COOKIE'],
+    'profile'  => ['REMOTE_ADDR','HTTP_ACCEPT_LANGUAGE'],
     // change the values to reflect the names of fiels in your login.phtml form
     'login_fields' => [
         'name'     => 'name',
@@ -269,8 +275,54 @@ Here are some notes on config file settings under the `TRANSFORM` config key:
 * `TRANSFORM::transform_file_field`
   * Name of the form field that is used if you want to upload a set of transforms
 
-## Pre-Processing
-Before the final HTML view is rendered, `/public/index.php` includes `/src/processsing.php`.
-In this file you can include any pre-processing you need done.
-* The request URL is available as the variable `$uri`
-* This is where the admin URL is captured and sent to processing
+## Clicks
+A class `FileCMS\Common\Stats\Clicks` was added as of version 0.2.1.
+Records the following information into a CSV file:
+* URL
+* Date
+* Time
+* IP address
+* Referrer
+* 1
+The "1" can be used in a spreadsheet to create totals by any of the other fields.
+After logging in as the admin user, go to `/super/clicks`.
+### Statistical Methods
+The following methods are available for your use:
+#### Clicks::get(string $click_fn) : array
+Returns an array keyed and sorted by URL, with hit grand totals.
+#### Clicks::get_by_page_by_day(string $click_fn) : array
+Returns an array keyed and sorted by URL + Y-m-d, with hit totals for each day
+#### Clicks::get_by_path(string $click_fn, string $path) : array
+Returns the same as `get_by_page_by_day()` except that it filters results based on `$path`.
+Use this to return stats on URLs such as `/practice/dr_tom/`.
+
+## Change Log
+### tag: v0.2.2 / v0.2.3
+* 2022-04-22 DB: Finished testing modifications to Profile
+* 2022-04-18 DB: Updated tests
+* 2022-02-17 DB: Added option to prevent %%CARDS%% tags from being overwritten + implemented messages marker replacement for static HTML pages + expanded tests
+### tag: v0.2.1
+* 2022-02-16 DB: Updated tests + removed user key from Common\Security\Profile
+### tag: v0.2.2
+* 2022-02-13 DB: Fixed bug whereby you can never login
+### tag: v0.2.4
+2022-05-12 DB:
+* Created `Email::trustedSend()` that allows you to directly call the core email send function
+* Refactored `Email::confirmAndSend()` to call `trustedSend()`
+* Added `$debug` option to facilitate testing and debugging
+  * If set `TRUE` the email is not actually sent, and a `PHPMailer` instance is set to `Email::$phpMailer`
+* Added `FileCMSTest\Common\Contact\EmailTest` test class
+### tag: v0.2.5
+* `FileCMS\Common\Contact\Email::trustedSend()`
+  * Fixed bug whereby you were only allowed to send a string to `$cc` and `$bcc`
+  * These inputs now allowed `mixed` types (expected string|array)
+* Updated `FileCMSTest\Common\Contact\EmailTest` and `FileCMSTest\Common\Security\ProfileTest`
+* `FileCMS\Common\Import\Import`
+  * Added message if URL not found
+  * Wrapped `file_get_contents($url)` call in `try` / `catch` to prevent expected errors from messing up test results
+### tag: v0.2.6
+* `FileCMS\Common\Contact\Email::trustedSend()`
+  * Fixed bug whereby PHPMailer was always set to SMTP regardless of config settings
+* Updated `FileCMSTest\Common\Contact\EmailTest`
+  * Added tests to see if PHPMailer instance is set to "smtp" or "mail"
+

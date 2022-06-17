@@ -9,6 +9,7 @@ $config = [
     'HOST'   => '',
     'DELIM'  => '%%',
     'CONTENTS' => '%%CONTENTS%%',
+    'AUTH_DIR' => BASE_DIR . '/logs',
     'CLICK_CSV' => BASE_DIR . '/logs/clicks.csv',
     'MSG_MARKER'  => '<!-- %%MESSAGES%% -->',
     'CONTACT_LOG' => BASE_DIR . '/logs/contact.log',
@@ -19,7 +20,7 @@ $config = [
         'sess_hash_key'  => 'hash',
         'font_file'      => SRC_DIR . '/fonts/FreeSansBold.ttf',
         'img_dir'        => BASE_DIR . '/public/img/captcha',
-        'num_bytes'      => 2,
+        'num_bytes'      => 3,  // each byte == 2 characters
     ],
     'META' => [
         'default' => [
@@ -34,7 +35,7 @@ $config = [
         'attempts'  => 3,
         'message'   => 'Sorry! Unable to login.  Please contact your administrator',
         // reserved for future use:
-        'allowed_ip' => ['24.130.127.60','183.89.77.87'],
+        'allowed_ip' => ['10.0.0.0/24','192.168.0.0/24'],
         // array of $_SERVER keys to store in session if authenticated
         'profile'  => ['REMOTE_ADDR','HTTP_ACCEPT_LANGUAGE'],
         // change the values to reflect the names of fields in your login.phtml form
@@ -85,13 +86,14 @@ $config = [
      * Sample form can be found at /templates/site/contact.phtml
      */
     'COMPANY_EMAIL' => [
-        'to'   => '',
+        'to'   => 'me@company.com',
         'cc'   => '',
-        'from' => '',
+        'from' => 'office@company.com',
         'SUCCESS' => '<span style="color:green;font-weight:700;">Thanks!  Your request has been sent.</span>',
         'ERROR'   => '<span style="color:red;font-weight:700;">Sorry!  Your question, comment or request info was not received.</span>',
         'phpmailer' => [
-            'smtp'          => TRUE,                // Use SMTP (true) or PHP Mail() function (false)
+            'html'          => TRUE,                // set FALSE if you want plain text
+            'smtp'          => FALSE,               // Use SMTP (true) or PHP Mail() function (false)
             'smtp_host'     => 'REPL_SMTP_HOST',    // SMTP server address - URL or IP
             'smtp_port'     => 587,                 // 25 (standard), 465 (SSL), or 587 (TLS)
             'smtp_auth'     => TRUE,                // SMTP Authentication - PLAIN

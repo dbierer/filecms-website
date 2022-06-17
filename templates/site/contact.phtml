@@ -1,8 +1,8 @@
 <?php
 use FileCMS\Common\Image\Captcha;
-use FileCMS\Common\Contact\Email;
 use FileCMS\Common\Data\Storage;
 use FileCMS\Common\Generic\Messages;
+use FileCMS\Common\Contact\{Email,AntiSpam};
 use FileCMS\Common\Security\{Filter,Validation};
 // process contact post (if any)
 // $OBJ == calling instance
@@ -42,20 +42,19 @@ if ($_POST) {
                         $text = Filter::runFilters($text, $callbacks);
                 }
             }
-            // send sanitized email data
-            $msg = Email::processPost($config, $inputs, $body);
-            $message->addMessage($msg);
-
-            // store message in file
-            // default is CSV, append mode
-            // set STORAGE::storage_fmt = "php|json" in config file if CSV not desired
-            $store = new Storage($config);
-            $storage->save($inputs);
-
-            // log body + message
-            $body .= (!empty($msg)) ? "\n" . strip_tags($msg) . "\n" : '';
-            if ($body) {
-                file_put_contents($log, $body, FILE_APPEND);
+            // send if CAPTCHA validates
+            if (AntiSpam::verifyCaptcha($config)) {
+                // send sanitized email data
+                $msg = Email::processPost($config, $inputs, $body);
+                $message->addMessage($msg);
+                // store message in file
+                // default is CSV, append mode
+                // set STORAGE::storage_fmt = "php|json" in config file if CSV not desired
+                $store = new Storage($config);
+                $storage->save($inputs);
+                // log body + message
+                $body .= (!empty($msg)) ? "\n" . strip_tags($msg) . "\n" : '';
+                if ($body) file_put_contents($log, $body, FILE_APPEND);
             }
         }
     }
