@@ -9,7 +9,7 @@ if (!empty($OBJ)) {
     $config = $OBJ->config;
 }
 // check to see if authenticated
-if (Profile::verify($config) === FALSE) {
+if (Profile::verify() === FALSE) {
     Profile::logout();
     (Messages::getInstance())->addMessage('Unable to authenticate');
     echo '<h1>Unable to authenticate</h1>';

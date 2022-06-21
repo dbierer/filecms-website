@@ -325,4 +325,7 @@ Use this to return stats on URLs such as `/practice/dr_tom/`.
   * Fixed bug whereby PHPMailer was always set to SMTP regardless of config settings
 * Updated `FileCMSTest\Common\Contact\EmailTest`
   * Added tests to see if PHPMailer instance is set to "smtp" or "mail"
-
+### 2022-06-21
+* Updated `templates/site/contact.phtml` to use new class/method `FileCMS\Common\Security\AntiSpam::verifyCaptcha()`
+* Fixed bugs in `src/browse.php` and `src/upload.php` (used by CK Editor for images)
+  * No longer sends `$config` as arg to `FileCMS\Common\Security\Profile::verify()`

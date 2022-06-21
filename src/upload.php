@@ -10,7 +10,7 @@ if (!empty($OBJ)) {
 }
 // check to see if authenticated
 $upload = new Upload($config);
-if (Profile::verify($config) === FALSE) {
+if (Profile::verify() === FALSE) {
     Profile::logout();
     (Messages::getInstance())->addMessage(Profile::PROFILE_AUTH_UNABLE);
     $upload->errors[] = Profile::PROFILE_AUTH_UNABLE;
