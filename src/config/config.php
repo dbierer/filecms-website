@@ -89,6 +89,8 @@ $config = [
         'to'   => 'me@company.com',
         'cc'   => '',
         'from' => 'office@company.com',
+        'mx_check' => TRUE, // if set TRUE, runs "checkdnsrr()" for "MX" records
+        'default_subject' => 'Need a Quote',
         'SUCCESS' => '<span style="color:green;font-weight:700;">Thanks!  Your request has been sent.</span>',
         'ERROR'   => '<span style="color:red;font-weight:700;">Sorry!  Your question, comment or request info was not received.</span>',
         'phpmailer' => [
@@ -101,6 +103,10 @@ $config = [
             'smtp_password' => 'REPL_SMTP_PASSWORD',// Password if smtp_auth is true
             'smtp_secure'   => 'tls',               // Supported SMTP secure connection - 'none, 'ssl', or 'tls'
         ],
+        // sprintf() pattern (mainly for non-HTML emails)
+        'pattern' => '%-20s : %s' . "\n",
+        // as of 2022-06-22 the only aspect of "fields" are the keys themselves (e.g. name, email, phone, etc.)
+        // the rest is for future use
         'fields' => [
             // Key is used for the "name" and "id" attributes of the HTML input tags
             'name'    => [
