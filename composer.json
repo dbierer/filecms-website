@@ -24,6 +24,6 @@
     },
     "require": {
         "php" : ">=7.4",
-        "unlikelysource/filecms-core": "^0.2.10"
+        "unlikelysource/filecms-core": "^0.2.11"
     }
 }

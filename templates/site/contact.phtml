@@ -11,7 +11,8 @@ if (!empty($OBJ)) {
     $config = $OBJ->config;
 }
 $message = Messages::getInstance();
-$fields = $config['COMPANY_EMAIL']['fields'] ?? [];
+$fields  = $config['COMPANY_EMAIL']['fields'] ?? [];
+$hashTag = $config['CAPTCHA']['input_tag_name'] ?? 'phrase';
 if ($_POST) {
     $no_fill = TRUE;
     if (!empty($_POST['no_fill'])) {
@@ -21,9 +22,9 @@ if ($_POST) {
         error_log(AntiSpam::ERR_NO_FILL);
         error_log($_SERVER['REMOTE_ADDR'] ?? 'Unknown IP Address');
     }
-    $body = '';
-    $log = $config['CONTACT_LOG'];
-    $inputs = $_POST;
+    $body     = '';
+    $log      = $config['CONTACT_LOG'];
+    $inputs   = $_POST;
     $expected = 0;
     $actual   = 0;
     if (!empty($fields) && $no_fill) {
@@ -51,7 +52,8 @@ if ($_POST) {
                 }
             }
             // send if CAPTCHA validates
-            if (AntiSpam::verifyCaptcha($config)) {
+            $phrase  = $inputs[$hashTag] ?? 'N/A';
+            if (AntiSpam::verifyCaptcha($config, $phrase)) {
                 // send sanitized email data
                 $msg = Email::processPost($config, $inputs, $body);
                 $message->addMessage($msg);
@@ -155,7 +157,7 @@ $msg = $message->getMessages() ?? '';
                     <br />
                     &nbsp;&nbsp;Prove you're human! Enter the characters below:<br />&nbsp;&nbsp;
                     <?php foreach ($images as $fn) : ?><img src="/img/captcha/<?= $fn; ?>" style="width:50px;height:auto;" /><?php endforeach; ?>
-                    &nbsp;<input type="text" name="phrase" placeholder="I'm not a robot" /><br /><br />
+                    &nbsp;<input type="text" name="<?= $hashTag; ?>" placeholder="I'm not a robot" /><br /><br />
                     <input type="hidden" id="source" name="source" value="<?= $config['HOST'] . $uri; ?>">
                     <input type="hidden" id="no_fill" name="no_fill" value="" />
                     <input name="submit" type="submit" class="btn btn-primary btn-circled" value="Send Message">
