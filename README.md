@@ -1,4 +1,4 @@
-# FileCMS Website (v0.2.7)
+# FileCMS
 NOTE: formerly called _SimpleHtml_
 
 Simple PHP framework that builds HTML files from HTML widgets.
@@ -15,7 +15,7 @@ Simple PHP framework that builds HTML files from HTML widgets.
 License: Apache v2
 
 ## Initial Installation
-1. Clone the this repository to the project root of your new website.
+1. Clone the `filecms-website` repository to the project root of your new website.
   * If you have `git` installed run this command from a command prompt / terminal window:
 ```
 git clone https://github.com/dbierer/filecms-website.git /path/to/website
@@ -325,7 +325,24 @@ Use this to return stats on URLs such as `/practice/dr_tom/`.
   * Fixed bug whereby PHPMailer was always set to SMTP regardless of config settings
 * Updated `FileCMSTest\Common\Contact\EmailTest`
   * Added tests to see if PHPMailer instance is set to "smtp" or "mail"
-### 2022-06-21
-* Updated `templates/site/contact.phtml` to use new class/method `FileCMS\Common\Security\AntiSpam::verifyCaptcha()`
-* Fixed bugs in `src/browse.php` and `src/upload.php` (used by CK Editor for images)
-  * No longer sends `$config` as arg to `FileCMS\Common\Security\Profile::verify()`
+### tag: v0.2.8
+* `FileCMS\Common\Contact\Email::confirmAndSend()`
+  * Removed CAPTCHA verification logic and put into new `AntiSpam` class
+* `FileCMS\Common\Contact\AntiSpam`
+  * Added static function `verifyCaptcha($config)`
+### tag: v0.2.9
+* `FileCMS\Common\Security\Profile::verify()`
+  * Removed type-hint from method signature for backward compatibility
+### tag: v0.2.10
+Date:   Sat Jun 25 16:42:03 2022 +0700
+* 2022-06-25 DB: Enhancing security in Common\Contact\Email
+* 2022-06-21 DB: Minor fix to Common\Security\Profile::verify()
+### tag: v0.2.11
+Date:   Sun Jul 10 12:50:24 2022 +0700
+Update Clicks.php
+Added new column
+* `add()` includes `json_encode($_GET)`
+* `raw_get()` does `json_decode()` on new column
+* Updated `CLICK_HEADERS`
+
+
