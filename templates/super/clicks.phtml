@@ -1,4 +1,5 @@
 <?php
+use FileCMS\Common\View\Table;
 use FileCMS\Common\Stats\Clicks;
 use FileCMS\Common\Generic\Messages;
 // $OBJ == calling instance
@@ -9,8 +10,7 @@ if (!empty($OBJ)) {
 $message  = Messages::getInstance();
 // grab clicks
 $click_fn = $config['CLICK_CSV'] ?? BASE_DIR . '/logs/clicks.csv';
-$clicks   = Clicks::get($click_fn);
-if (!empty($_POST['data'])) {
+if (!empty($_POST['raw_data'])) {
     header('Content-type: text/csv');
     header('Content-Disposition: attachment; filename="clicks.csv"');
     ob_clean();
@@ -18,24 +18,71 @@ if (!empty($_POST['data'])) {
     exit;
 }
 // format clicks as HTML table
-$html = '<table border=1>' . PHP_EOL;
-$html .= '<tr><th>URL</th><th>Date</th><th>Hits</th></tr>' . PHP_EOL;
-foreach ($clicks as $row)
-    $html .= vsprintf('<tr><td>%s</td><td>%s</td><td>%6d</td></tr>' . PHP_EOL, $row);
-$html .= '</table>' . PHP_EOL;
+$css_class = [
+    'td' => 't-cell',
+    'th' => 't-cell',
+];
+switch (TRUE) {
+    case (!empty($_POST['by_day'])) :
+        $clicks  = Clicks::get_by_page_by_day($click_fn);
+        $headers = [Clicks::CLICK_HEADERS[0],Clicks::CLICK_HEADERS[1],Clicks::CLICK_HEADERS[6]];
+        $html    = Table::render_table($clicks, $headers, [], $css_class);
+        break;
+    case (!empty($_POST['by_month'])) :
+        $callback = function ($row) {
+            $val = FALSE;
+            if (!empty($row[0]) && !empty($row[1])) {
+                $val = $row[0] . '-' . substr($row[1], 0, 7);
+            }
+            return $val;
+        };
+        $clicks    = Clicks::raw_get($click_fn, $callback);
+        $headers   = [Clicks::CLICK_HEADERS[0],Clicks::CLICK_HEADERS[1],Clicks::CLICK_HEADERS[6]];
+        $callbacks = [
+            1 => function ($item) {
+                     $date = new DateTime($item);
+                     return $date->format(Clicks::MONTH_FMT);
+                 }
+        ];
+        $html = Table::render_table($clicks, $headers, $callbacks, $css_class);
+        break;
+    case (!empty($_POST['by_url'])) :
+        $path    = $_POST['path'] ?? '/home';
+        $clicks  = Clicks::get_by_path($click_fn, $path);
+        $headers = [Clicks::CLICK_HEADERS[0],Clicks::CLICK_HEADERS[1],Clicks::CLICK_HEADERS[6]];
+        $callbacks = [
+            1 => function ($item) {
+                     $date = new DateTime($item);
+                     return $date->format(Clicks::MONTH_FMT);
+                 }
+        ];
+        $html    = Table::render_table($clicks, $headers, $callbacks, $css_class);
+        break;
+    case (!empty($_POST['totals'])) :
+    default :
+        $clicks  = Clicks::get($click_fn);
+        $headers = [Clicks::CLICK_HEADERS[0], Clicks::CLICK_HEADERS[6]];
+        $html    = Table::render_table($clicks, $headers, [], $css_class);
+        break;
+}
+if (empty($clicks)) {
+    $html = 'No Data';
+}
 // get messages
 $msg = $message->getMessages() ?? 'Enter a URL to import.';
 ?>
+  <style>
+  .t-cell {
+      border: thin solid gray;
+  }
+  </style>
   <!-- Header -->
   <header class="bg-primary py-5 mb-5">
     <div class="container h-100">
       <div class="row h-100 align-items-center">
         <div class="col-lg-12">
           <h1 class="display-4 text-white mt-5 mb-2">Clicks</h1>
-          <p class="lead mb-5 text-white-50">Page hits by URL, excluding the home page.
-          The reason why the home page is excluded is because it's the default fallback if a URL is not found.
-          Hacking attempts results in the home page being displayed and would artificially inflate hit counts.
-          Accordingly, hit counts for the home page are not included.
+          <p class="lead mb-5 text-white-50">Page hits totals by URL, by day and by month</p>
           <?php include ($config['SUPER']['super_menu'] ?? '') ?>
         </div>
       </div>
@@ -45,7 +92,17 @@ $msg = $message->getMessages() ?? 'Enter a URL to import.';
   <div class="container">
     <div class="row">
         <div class="col-lg-12">
-        <form method="post"><input type="submit" name="data" value="Download Raw Data" /></form>
+        <br />
+        <form method="post">
+        <input type="submit" name="raw_data" value="Download Raw Data" />&nbsp;
+        <input type="submit" name="totals" value="Totals" />&nbsp;
+        <input type="submit" name="by_day" value="By Day" />&nbsp;
+        <input type="submit" name="by_month" value="By Month" />&nbsp;
+        <input type="text" name="path" value="" placeholder="/enter/url" size="6" style="display:inline-block;width:33%;"/>
+        <input type="submit" name="by_url" value="By URL" />
+        </form>
+        <br />
+        <?php echo (!empty($msg)) ? $msg : '' ?>
         <br />
         <?= $html ?>
         </div>
