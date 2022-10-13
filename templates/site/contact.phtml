@@ -13,6 +13,8 @@ if (!empty($OBJ)) {
 $message = Messages::getInstance();
 $fields  = $config['COMPANY_EMAIL']['fields'] ?? [];
 $hashTag = $config['CAPTCHA']['input_tag_name'] ?? 'phrase';
+// check for GD
+$gd = (function_exists('gd_info')) ? TRUE : FALSE;
 if ($_POST) {
     $no_fill = TRUE;
     if (!empty($_POST['no_fill'])) {
@@ -53,7 +55,8 @@ if ($_POST) {
             }
             // send if CAPTCHA validates
             $phrase  = $inputs[$hashTag] ?? 'N/A';
-            if (AntiSpam::verifyCaptcha($config, $phrase)) {
+            $valid   = ($gd) ? AntiSpam::verifyCaptcha($config, $phrase) : TRUE;
+            if ($valid) {
                 // send sanitized email data
                 $msg = Email::processPost($config, $inputs, $body);
                 $message->addMessage($msg);
@@ -65,16 +68,23 @@ if ($_POST) {
                 // log body + message
                 $body .= (!empty($msg)) ? "\n" . strip_tags($msg) . "\n" : '';
                 if ($body) file_put_contents($log, $body, FILE_APPEND);
-            }
+			}
         }
     }
 }
-// generate CAPTCHA
+// generate CAPTCHA if GD installed
+if ($gd) {
+	// generate CAPTCHA
+	$token   = bin2hex(random_bytes(4));
+	$captcha = new Captcha($config['CAPTCHA']);
+	$images  = $captcha->writeImages($token);
+	$hash    = password_hash($captcha->phrase, PASSWORD_BCRYPT);
+} else {
+	$images  = [];
+	$hash    = '';
+	$message->addMessage('You must install the PHP GD extension to see CAPTCHA images');
+}
 $hashKey = $config['CAPTCHA']['sess_hash_key'] ?? 'hash';
-$token   = bin2hex(random_bytes(4));
-$captcha = new Captcha($config['CAPTCHA']);
-$images  = $captcha->writeImages($token);
-$hash    = password_hash($captcha->phrase, PASSWORD_BCRYPT);
 $_SESSION[$hashKey] = $hash;
 $msg = $message->getMessages() ?? '';
 ?>

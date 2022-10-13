@@ -32,6 +32,7 @@ wget https://getcomposer.org/download/latest-stable/composer.phar
 php composer.phar self-update
 php composer.phar install
 ```
+3. Install the PHP `GD` extension if you plan to to use the contact form with CAPTCHAs
 
 ## Basic website config
 All references are from `/path/to/website`
