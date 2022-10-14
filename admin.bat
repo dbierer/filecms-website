@@ -1,5 +1,5 @@
 @echo off
-SET USAGE="Usage: init.sh up|down|build|ls|init|demo|shell"
+SET USAGE="Usage: init.sh up|down|build|ls|demo|shell"
 SET CONTAINER="file_cms"
 SET INIT=0
 
@@ -37,23 +37,14 @@ docker container ls
 GOTO:EOF
 
 :opt5
-IF "%1"=="init" GOTO :init
-GOTO :opt6
-:init
-docker exec %CONTAINER% /bin/bash -c "/etc/init.d/mysql restart"
-docker exec %CONTAINER% /bin/bash -c "/etc/init.d/php-fpm restart"
-docker exec %CONTAINER% /bin/bash -c "/etc/init.d/httpd restart"
-GOTO:EOF
-
-:opt6
 IF "%1"=="shell" GOTO :shell
-GOTO :opt7
+GOTO :opt6
 :shell
 IF "%2"=="" GOTO :usage
 docker exec -it %CONTAINER% /bin/bash
 GOTO:EOF
 
-:opt7
+:opt6
 IF "%1"=="demo" GOTO :demo
 GOTO :done
 :demo

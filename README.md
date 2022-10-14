@@ -345,5 +345,21 @@ Added new column
 * `add()` includes `json_encode($_GET)`
 * `raw_get()` does `json_decode()` on new column
 * Updated `CLICK_HEADERS`
-
-
+### tag: v0.2.13
+Updated Docker and Docker Compose
+* Switched to Alpine Linux
+* Docker image now includes:
+  * PHP 8.1
+  * PHP FPM
+  * nginx
+* Added
+  * `default.conf`
+* Updated
+  * `Dockerfile`
+  * `startup.sh`
+  * `admin.sh`
+  * `admin.bat`
+* Modified error handling in `public/index.php`
+  * Everything is now inside `try/catch` block
+  * Hard loaded `layout.html` and `error.html`
+  * Used `str_replace()` to display most recent error

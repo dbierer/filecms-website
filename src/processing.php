@@ -5,7 +5,7 @@ use FileCMS\Common\Stats\Clicks;
 use FileCMS\Common\Security\Profile;
 use FileCMS\Common\Generic\Messages;
 $click_fn  = $config['CLICK_CSV'] ?? BASE_DIR . '/logs/clicks.csv';
-//Clicks::add($uri, $click_fn);
+Clicks::add($uri, $click_fn);
 $super_url = $config['SUPER']['super_url'] ?? '/super';
 $super_dir = $config['SUPER']['super_dir'] ?? BASE_DIR . '/templates/super';
 if (strpos($uri, $super_url) === 0) {
