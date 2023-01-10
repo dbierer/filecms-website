@@ -16,29 +16,38 @@ $message = Messages::getInstance();
 $msg     = $message->getMessages() ?? Messages::LOGIN;
 $other   = '';
 $super_url  = $config['SUPER']['super_url'] ?? Edit::DEFAULT_SUPER;
-$validation = $config['SUPER']['validation'] ?? [];
 // not used by default, but you can easily add this in
 $allowed_ip = $config['SUPER']['allowed_ip'] ?? [];
 $ip         = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+$validation = $config['SUPER']['validation'] ?? [];
 if ($_POST) {
     // capture login params
-    $name   = $_POST['name']     ?? 'Default';
-    $pwd    = $_POST['password'] ?? 'Default';
-    $phrase = $_POST['phrase']   ?? 'Default';
-    $other  = $_POST['other']    ?? '';
+    $name    = trim($_POST['name']     ?? 'Default');
+    $pwd     = trim($_POST['password'] ?? 'Default');
+    $phrase  = trim($_POST['phrase']   ?? 'Default');
+    $other   = trim($_POST['other']    ?? '');
+    $no_fill = trim($_POST['no_fill']  ?? '');
     // get valid info
-    $valid_name  = $config['SUPER']['username'] ?? 'Not Set';
-    $valid_pwd   = $config['SUPER']['password'] ?? 'Not Set';
+    if (isset($config['SUPER']['alt_logins'][$name])) {
+        $valid_name = $config['SUPER']['alt_logins'][$name]['username'] ?? 'Not Set';
+        $valid_pwd  = $config['SUPER']['alt_logins'][$name]['password'] ?? 'Not Set';
+    } else {
+        $valid_name = $config['SUPER']['username'] ?? 'Not Set';
+        $valid_pwd  = $config['SUPER']['password'] ?? 'Not Set';
+    }
     $valid_other = $_SESSION['other'] ?? 'Not Set';
     $valid_hash  = $_SESSION[$hashKey] ?? 'Not Set';
     // expected results
-    $expected = 4;
+    $expected = 5;
     // validate login
     $valid = 0;
     $valid += (int) ($name === $valid_name);
     $valid += (int) ($pwd  === $valid_pwd);
     $valid += (int) password_verify($phrase, $valid_hash);
-    $valid += (int) ($other === $valid_other);
+    $valid += (int) empty($no_fill);    // reverse CAPTCHA
+    $valid += (int) (is_array($valid_other))
+                    ? (in_array($other, $valid_other, TRUE))
+                    : ($other === $valid_other);
     if ($valid === $expected) {
         // store selected $_SERVER array settings
         Profile::init($config);
@@ -137,6 +146,7 @@ $_SESSION[$hashKey] = $hash;
                             <?php foreach ($images as $fn) : ?><img src="/img/captcha/<?= $fn; ?>" style="width:50px;height:auto;" /><?php endforeach; ?>
                             &nbsp;<input type="text" name="phrase" placeholder="I'm not a robot" /><br /><br />
                             <input type="hidden" id="source" name="source" value="<?= $config['HOST'] . $uri; ?>" />
+                            <input type="hidden" id="no_fill" name="no_fill" value="" />
                             <br />
                             <input name="submit" type="submit" class="btn btn-primary btn-circled" value="Login" />
                         </div>

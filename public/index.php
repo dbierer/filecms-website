@@ -9,9 +9,10 @@ try {
     // pre-processing logic:
     include SRC_DIR . '/processing.php';
     // routes w/ forms need to do an include
+    $html_dir = $config['HTML_DIR'] ?? HTML_DIR;
     header('Content-Type: text/html');
     header('Content-Encoding: compress');
-    $html = new \FileCMS\Common\View\Html($config, $uri, HTML_DIR);
+    $html = new \FileCMS\Common\View\Html($config, $uri, $html_dir);
     echo $html->render();
 } catch (Throwable $t) {
     error_log($t->getFile() . ':' . $t->getLine() . "\n" . $t->getTraceAsString());
