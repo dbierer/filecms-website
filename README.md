@@ -1,5 +1,4 @@
-# FileCMS
-NOTE: formerly called _SimpleHtml_
+# FileCMS (v0.3.7)
 
 Simple PHP framework that builds HTML files from HTML widgets.
 * Includes a class that can generate and validate CAPTCHAs (uses the GD extension).
@@ -8,9 +7,10 @@ Simple PHP framework that builds HTML files from HTML widgets.
 * Is able to import single files from a legacy website, or can do bulk import
 * Includes a complete set of transformation filters that can be applied during import, or afterwards
 * Entirely file-based: does not require a database!
+* Includes classes that let you use a CSV file just like a database
 * Very fast and flexible.
 * Once you've got it up and running, just upload HTML snippets and/or modify the configuration file.
-* Works on PHP 8.1
+* Works on PHP 7.0 to 8.2
 
 License: Apache v2
 
@@ -32,7 +32,6 @@ wget https://getcomposer.org/download/latest-stable/composer.phar
 php composer.phar self-update
 php composer.phar install
 ```
-3. Install the PHP `GD` extension if you plan to to use the contact form with CAPTCHAs
 
 ## Basic website config
 All references are from `/path/to/website`
@@ -181,29 +180,51 @@ Example configuration for super user:
 ```
 // other config not shown
 'SUPER' => [
-    'username' => 'admin',
-    'password' => 'password',
-    'attempts' => 3,
-    'message'  => 'Sorry! Unable to login.  Please contact your administrator',
+    'username'  => 'REPL_SUPER_NAME',  // fill in your username here
+    'password'  => 'REPL_SUPER_PWD',   // fill in your password here
+    /*
+     * extra login validation fields
+     * change key/value pairs as desired
+     * add as many as you want
+     * they're selected at random when asked to login
+     */
+    'validation'   => [
+        // if value is array, authentication needs to use "in_array()"
+        'City'        => ['London','Tokyo'],
+        'Postal Code' => 'NW1 6XE',
+        'Last Name'   => ['Holmes','Lincoln'],
+    ],
+    'alt_logins' => [
+        'REPL_OTHER_NAME' => [
+            'username'  => 'REPL_OTHER_NAME',  // fill in alt username here
+            'password'  => 'REPL_OTHER_PWD',   // fill in alt password here
+        ],
+        // add others as needed
+    ],
+    'attempts'  => 3,
+    'message'   => 'Sorry! Unable to login.  Please contact your administrator',
+    // reserved for future use:
+    'allowed_ip' => ['10.0.0.0/24','192.168.0.0/24'],
     // array of $_SERVER keys to store in session if authenticated
     'profile'  => ['REMOTE_ADDR','HTTP_ACCEPT_LANGUAGE'],
-    // change the values to reflect the names of fiels in your login.phtml form
+    // change the values to reflect the names of fields in your login.phtml form
     'login_fields' => [
         'name'     => 'name',
         'password' => 'password',
         'other'    => 'other',
         'phrase'   => 'phrase',     // CAPTCHA phrase
     ],
-    'validation'   => [
-        'City' => 'London',
-        'Postal Code' => '12345',
-        'Last Name' => 'Smith',
-    ],
+    // only files with these extensions can be edited
     'allowed_ext'  => ['html','htm'],
     'ckeditor'     => [
-        'width' => '100%',
+        'width'  => '100%',
         'height' => 400,
     ],
+    'super_url'  => '/super',                // IMPORTANT: needs to be a subdir off the "super_dir" setting
+    'super_dir'  => BASE_DIR . '/templates', // IMPORTANT: needs to have a subdir === "super_url" setting
+    'super_menu' => BASE_DIR . '/templates/layout/super_menu.html',
+    'backup_dir' => BASE_DIR . '/backups',
+    'backup_cmd' => BASE_DIR . 'zip -r %%BACKUP_FN%% %%BACKUP_SRC%%',
 ],
 // other config not shown
 ```
@@ -214,12 +235,15 @@ Here's a breakdown of the `SUPER` config keys
 | username | Super user login name |
 | password | Super user login password |
 | attempts | Maximum number of failed login attempts.  If this number is exceeded, a random third authentication field is required for login. |
+| validation | Set of key:value pairs randomly selected each time you login. Values can be in the form of an array. |
+| alt_logins | Additional usernames and passwords |
 | message  | Message that displayed if login fails |
 | profile  | Array of `$_SERVER` keys that form the super user's profile once logged in |
 | login_fields | Field names drawn from your `login.phtml` login form |
 | validation   | You can specify as many of these as you want.  If the login attemp exceeds `attempts`, the SimpleHtml framework will automatically add a random field drawn from this list. |
 | allowed_ext  | Only files with an extension on this list can be edited. |
 | ckeditor     | Default width and height of the CKeditor screen |
+| super_* | Settings pertaining to the location of the super admin user URL, templates and menu |
 
 ## Contact Form
 The skeleton app includes under `/templates` a file `contact.phtml` that implements an email contact form with a CAPTCHA
@@ -297,6 +321,46 @@ Returns an array keyed and sorted by URL + Y-m-d, with hit totals for each day
 Returns the same as `get_by_page_by_day()` except that it filters results based on `$path`.
 Use this to return stats on URLs such as `/practice/dr_tom/`.
 
+## CSV
+You can use a CSV file just like a database using either the `FileCMS\Common\Data\Csv` or `FileCMS\Common\Data\BigCsv` classes
+* `FileCMS\Common\Data\Csv`
+  * Use this for small CSV files (less than 10 MB in size)
+  * Fast performance
+  * Uses a lot of memory
+* `FileCMS\Common\Data\BigCsv`
+  * Use this for large CSV files (greater than 10 MB in size)
+  * Moderate performance
+  * Uses very little memory
+  * If your CSV file is greater than 10 MB in size use this class instead of `FileCMS\Common\Data\Csv`
+
+### public function getItemsFromCsv($key_field = NULL) : array
+* Gets list of items from CSV
+* @param string|array $key_field : header(s) to use as key; leave blank for numeric array
+* @return array $select : `[key => value]`; key === practice_key; value = $row
+### public function writeRowToCsv(array $post, array $csv_fields = `[]`) : bool
+* Writes row to CSV
+* @param array $post       : normally sanitized $_POST
+* @param array $csv_fields : array of CSV headers; leave blank if headers not used
+* @return bool             : TRUE if entry made OK
+### public function findItemInCSV(string $search, bool $case = FALSE, bool $first = TRUE) : array
+* Finds key in CSV file
+* Assumes first row is headers unless $first === FALSE
+* Stores contents of CSV file in $this->lines
+* If found, sets $this->pos to the line number of the row found in $this->lines
+* @param string $search  : any value that might be in the CSV file
+* @param bool $case      : TRUE: case sensitive; FALSE: `[default]` case insensitive search
+* @param bool $first_row : TRUE `[default]`: first row is headers; FALSE: first row is data
+* @return array
+### public function updateRowInCsv(string $search, array $data, array $csv_fields = [], bool $case = FALSE) : bool
+* Updates row in CSV file
+* If you don't supply $csv_fields, assumes no headers
+* If no headers, update does delete and then insert
+* @param string $search  : any value that might be in the CSV file
+* @param array $data     : array of items to update
+* @param array $csv_fields : array of fields names; leave blank if you don't use headers
+* @param bool $case      : TRUE: case sensitive; FALSE: `[default]` case insensitive search
+* @return bool             : TRUE if entry made OK
+
 ## Change Log
 ### tag: v0.2.2 / v0.2.3
 * 2022-04-22 DB: Finished testing modifications to Profile
@@ -340,26 +404,104 @@ Date:   Sat Jun 25 16:42:03 2022 +0700
 * 2022-06-21 DB: Minor fix to Common\Security\Profile::verify()
 ### tag: v0.2.11
 Date:   Sun Jul 10 12:50:24 2022 +0700
-Update Clicks.php
+FileCMS\Common\Stats\Clicks:
 Added new column
 * `add()` includes `json_encode($_GET)`
 * `raw_get()` does `json_decode()` on new column
 * Updated `CLICK_HEADERS`
+### tag: v0.2.12
+Date: Thu Aug 18 10:33:15 2022 +0700
+Modified FileCMS\Common\Stats\Clicks to track all URLs but allow users to add list of URLs to be ignored
 ### tag: v0.2.13
-Updated Docker and Docker Compose
-* Switched to Alpine Linux
-* Docker image now includes:
-  * PHP 8.1
-  * PHP FPM
-  * nginx
-* Added
-  * `default.conf`
-* Updated
-  * `Dockerfile`
-  * `startup.sh`
-  * `admin.sh`
-  * `admin.bat`
-* Modified error handling in `public/index.php`
-  * Everything is now inside `try/catch` block
-  * Hard loaded `layout.html` and `error.html`
-  * Used `str_replace()` to display most recent error
+Date:   Thu Sep 8 09:54:26 2022 +0700
+FileCMS\Common\Stats\Clicks:
+* Added `get_by_page_by_month()`
+* Fixed `get_by_path()`
+FileCMS\Common\View\Table:
+* New class
+* Renders multi-dimensional array data
+* `render_table()` produces &lt;table> structure with optional CSS classes for table, tr, th and td
+* `render_as_div()` produces table structure using &lt;div class="row"> and &lt;div class="col">
+### tag: v0.3.0
+Date:   Thu Nov 3 11:09:53 2022 +0700
+Added FileCMS\Common\Data\Csv
+* See documentation above for method information
+### tag: v0.3.1
+FileCMS\Common\Security\Profile
+* Removed the following methods:
+  * `getAuthFileName()`
+  * `build()`
+* Removed the following constants:
+  * `DEFAULT_AUTH_DIR`
+  * `DEFAULT_AUTH_PREFIX`
+  * `AUTH_FILE_TTL`
+* Added these constants:
+  * `PROFILE_KEY = __CLASS__;`
+  * `PROFILE_DEF_SRC = 'HTTP_USER_AGENT';`
+* `Profile::init()`
+  * Revised to make backwards compatible
+  * Always adds `$_SERVER[Profile::PROFILE_DEF_SRC]` to profile
+  * If profile config keys are present, also adds these to profile
+  * All keys must be valid `$_SERVER` keys
+* `Profile::verify()`
+  * Revised to make backwards compatible
+  * Added config file as 2nd argument
+  * Always checks value of `$_SESSION[Profile::PROFILE_KEY][Profile::PROFILE_DEF_SRC]`
+  * If profile config keys are present, also confirms these values match
+### tag: v0.3.2
+`FileCMS\Common\Data\Csv`
+* If CSV file doesn't exist, first Csv instance creates it
+* If array of headers are supplied, first instance writes headers
+* Added new method `deleteRowInCsv()`
+* Slightly refactored `updateRowInCsv()` but functionality is the same
+### tag: v0.3.3
+`FileCMS\Common\Data\Csv`
+* `writeRowToCsv()`
+  * If you already have headers in the CSV file, this method will now allow you to write a row without using headers as the 2nd argument
+* `getItemsFromCsv()`
+  * Now allows you to read rows even if header count doesn't match
+  * If your headers are > the count of the CSV headers, just appends empty strings
+  * If your headers are < the count of the CSV headers, adds fake headers `Header_1`, `Header_2`, etc.
+* Also updated tests:
+  * `Common\Data\CsvTest`
+  * `Common\Security\ProfileTest`
+### tag: v0.3.4
+Fixed bad `sprintf()` call in `FileCMS\Common\Data\Csv::getItemsFromCsv()`
+### tag: v0.3.5
+Arghhhh ... struggling with git
+### tag: v0.3.6
+#### `FileCMS\Common\Data\BigCsv`
+* New class
+* Handles files of any size
+* Doesn't use `file()`
+* Low memory consumption
+* Not as fast as `Csv`
+#### `FileCMS\Common\Data\CsvTrait`
+* Hold common constants and methods
+* Used by `Csv` and `BigCsv`
+* Added new method `array_combine_whatever()`
+  * If header count === data count runs `array_combine()`
+  * If header count < data count starts creating headers `header_01`, `header_02` etc.
+  * If header count > data count just assigns the headers to the data items and drops remaining headers
+#### `FileCMS\Common\Data\Csv`
+* Refactored slightly to use `CsvTrait`
+* Added flag `$all` to `findItemInCSV()`
+  * If set `FALSE` (default) only returns 1st match
+  * If set `TRUE` returns all matching rows
+### tag: v0.3.7
+#### `FileCMS\Common\Data\*`
+* Moved `CsvTrait::array2csv()` and `array_combine_whatever()` to `FileCMS\Common\Generic\Functions`
+* Moved remaining `CsvTrait` functionality to `CsvBase`
+* Removed `CsvTrait`
+* Refactored `Csv` and `BigCsv` to extend `CsvBase`
+#### `FileCMS\Common\Generic\Functions`
+```
+public static function array2csv(array $data) : string
+```
+* Writes an array to CSV
+* Credits: https://stackoverflow.com/questions/13108157/php-array-to-csv
+
+```
+public static function array_combine_whatever(array $headers, array $data, string $prefix = '') : array
+```
+* Does the equivalent of `array_combine()` even if `count($headers)` doesn't match `count($data)`
