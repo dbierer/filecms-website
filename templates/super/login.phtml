@@ -144,7 +144,7 @@ $_SESSION[$hashKey] = $hash;
                         <div class="form-group">
                             &nbsp;&nbsp;Prove you're human! Enter the characters below:<br />&nbsp;&nbsp;
                             <?php foreach ($images as $fn) : ?><img src="/img/captcha/<?= $fn; ?>" style="width:50px;height:auto;" /><?php endforeach; ?>
-                            &nbsp;<input type="text" name="phrase" placeholder="I'm not a robot" /><br /><br />
+                            &nbsp;<input type="text" name="phrase" placeholder="I'm not a robot" autocomplete="off"/><br /><br />
                             <input type="hidden" id="source" name="source" value="<?= $config['HOST'] . $uri; ?>" />
                             <input type="hidden" id="no_fill" name="no_fill" value="" />
                             <br />
