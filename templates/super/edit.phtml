@@ -218,12 +218,12 @@ $msg = $message->getMessages() ?? Messages::EDIT;
     </div>
 </div>
 <script type="importmap">
-            {
-                "imports": {
-                    "ckeditor5": "https://cdn.ckeditor.com/ckeditor5/43.2.0/ckeditor5.js",
-                    "ckeditor5/": "https://cdn.ckeditor.com/ckeditor5/43.2.0/"
-                }
-            }
+{
+    "imports": {
+        "ckeditor5": "https://cdn.ckeditor.com/ckeditor5/43.2.0/ckeditor5.js",
+        "ckeditor5/": "https://cdn.ckeditor.com/ckeditor5/43.2.0/"
+    }
+}
 </script>
 <script type="module">
     import {
@@ -265,7 +265,6 @@ $msg = $message->getMessages() ?? Messages::EDIT;
         .catch(error => {
             console.error(error);
         });
-</script>
 </script>
 <?php /*
 CKEDITOR.config.toolbar = [
