@@ -10,13 +10,32 @@ if (!empty($OBJ)) {
 }
 // check to see if authenticated
 $upload = new Upload($config);
+$auth_failed = false;
 if (Profile::verify() === FALSE) {
     Profile::logout();
     (Messages::getInstance())->addMessage(Profile::PROFILE_AUTH_UNABLE);
     $upload->errors[] = Profile::PROFILE_AUTH_UNABLE;
-    $response = $upload->getErrorResponse();
+    $result = $upload->getErrorResponse();
+    $auth_failed = true;
 } else {
-    $response = $upload->handle('upload');
+    // Check token
+    $token = $_SESSION['token'] ?? 'xxx';
+    $hash  = base64_decode($_GET['token'] ?? 'yyy');
+    if (!password_verify($token, $hash)) {
+        header('Location: /');
+        exit;
+    }
+    $result = $upload->handle('upload');
+}
+// reshape the FileCMS\Common\File\Upload response into what TinyMCE's
+// built-in image upload handler expects: {"location": url} on success,
+// a non-200 status + {"error": message} on failure
+// see: https://www.tiny.cloud/docs/tinymce/latest/upload-images/
+if (empty($result['uploaded'])) {
+    http_response_code($auth_failed ? 403 : 400);
+    $response = ['error' => $result['error'] ?? Upload::UPLOAD_ERROR_UPLOAD];
+} else {
+    $response = ['location' => $result['url']];
 }
 header('Content-type: application/json');
 echo json_encode($response);

@@ -13,8 +13,8 @@ $key = '';
 $contents = '';
 $edit = new Edit($config);
 $message = Messages::getInstance();
-$edit_width = $config['SUPER']['ckeditor']['width'] ?? 900;
-$edit_height = $config['SUPER']['ckeditor']['height'] ?? 500;
+$edit_width = $config['SUPER']['tinymce']['width'] ?? 900;
+$edit_height = $config['SUPER']['tinymce']['height'] ?? 500;
 $super_url = $config['SUPER']['super_url'] ?? Edit::DEFAULT_SUPER;
 $backup_dir = $config['SUPER']['backup_dir'] ?? BASE_DIR . '/backups';
 // acquire key and page_url
@@ -78,10 +78,13 @@ if (isset($_GET['choose_del_page'])) {
     $action = 'edit';
 }
 $contents = $contents ?: $edit->getContentsFromPage($key, HTML_DIR);
+// generate one-time use token
+$token = bin2hex(random_bytes(8));
+$_SESSION['token'] = $token;
+$hash = base64_encode(password_hash($token, PASSWORD_BCRYPT));
 // get messages
 $msg = $message->getMessages() ?? Messages::EDIT;
 ?>
-<link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/43.2.0/ckeditor5.css">
 <!-- Header -->
 <div class="container">
     <div class="row align-items-center">
@@ -217,71 +220,21 @@ $msg = $message->getMessages() ?? Messages::EDIT;
 
     </div>
 </div>
-<script type="importmap">
-{
-    "imports": {
-        "ckeditor5": "https://cdn.ckeditor.com/ckeditor5/43.2.0/ckeditor5.js",
-        "ckeditor5/": "https://cdn.ckeditor.com/ckeditor5/43.2.0/"
-    }
-}
+<!-- Self-hosted TinyMCE (GPL) -- see /public/tinymce, installed via the "tinymce/tinymce" composer package -->
+<script src="/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: '#page_content',
+        license_key: 'gpl',
+        plugins: 'image code table lists link media autoresize',
+        toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright | bullist numlist | link image | code',
+        width: '<?= $edit_width ?>',
+        height: <?= (int) $edit_height ?>,
+        images_upload_url: '<?= $super_url ?>/upload?action=upload&token=<?= $hash ?>',
+        automatic_uploads: true,
+        images_reuse_filename: true,
+        relative_urls: false,
+        remove_script_host: false,
+        convert_urls: true,
+    });
 </script>
-<script type="module">
-    import {
-        ClassicEditor,
-        Heading,
-        Essentials,
-        Paragraph,
-        Bold,
-        Italic,
-        Font,
-        Image,
-        ImageToolbar,
-        ImageUpload,
-        FileRepository,
-        Link,
-        List
-    } from 'ckeditor5';
-    ClassicEditor
-        .create(document.querySelector('#page_content'), {
-            plugins: [Essentials, Heading, Paragraph, Bold, Italic, Font, Image, ImageToolbar, ImageUpload, FileRepository],
-            toolbar: [
-                'undo', 'redo', '|', 'bold', 'italic', '|',
-                'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
-                'imageUpload', 'numberedList', 'bulletedList', 'link', '|',
-            ],
-            menuBar: {
-                isVisible: true
-            },
-            image: {
-                toolbar: ['imageTextAlternative', 'imageStyle:inline', 'imageStyle:block', 'imageStyle:side']
-            },
-            ckfinder: {
-                uploadUrl: '/super/upload'
-            }
-        })
-        .then(editor => {
-            window.editor = editor;
-        })
-        .catch(error => {
-            console.error(error);
-        });
-</script>
-<?php /*
-CKEDITOR.config.toolbar = [
-{ name: 'document', items: [ 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates' ] },
-{ name: 'clipboard', items: [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord' ] },
-{ name: 'editing', items: [ 'Find', 'Replace', '-', 'SelectAll', '-', 'Scayt' ] },
-'/',
-{ name: 'justify', items: [ 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
-{ name: 'basicstyles', items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', 'Blockquote'] },
-{ name: 'paragraph', items: [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'] },
-{ name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
-'/',
-{ name: 'insert', items: [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', '-', 'Undo', 'Redo' ] },
-{ name: 'source', items: [ 'Source' ] },
-'/',
-{ name: 'styles', items: [ 'Styles', 'Format', 'Font', 'FontSize' ] },
-{ name: 'colors', items: [ 'TextColor', 'BGColor' ] },
-{ name: 'tools', items: [ 'Maximize', 'ShowBlocks' ] },
-];
-*/ ?>

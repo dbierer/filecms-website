@@ -21,6 +21,12 @@ $config = [
         'font_file'      => SRC_DIR . '/fonts/FreeSansBold.ttf',
         'img_dir'        => BASE_DIR . '/public/img/captcha',
         'num_bytes'      => 3,  // each byte == 2 characters
+        'rotate_min'     => -50,
+        'rotate_max'     => 50,
+        'line_min'       => 5,
+        'line_max'       => 50,
+        'dot_min'        => 20,
+        'dot_max'        => 60,
     ],
     'META' => [
         'default' => [
@@ -66,7 +72,7 @@ $config = [
         ],
         // only files with these extensions can be edited
         'allowed_ext'  => ['html','htm'],
-        'ckeditor'     => [
+        'tinymce'      => [
             'width'  => '100%',
             'height' => 400,
         ],

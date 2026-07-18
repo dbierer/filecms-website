@@ -23,7 +23,8 @@
         "source": "https://github.com/dbierer/filecms-website"
     },
     "require": {
-        "php" : ">=7.4",
-        "unlikelysource/filecms-core": "^0.3.0"
+        "php" : ">=8",
+        "unlikelysource/filecms-core": "^0.3.0",
+        "tinymce/tinymce": "^8.0"
     }
 }
