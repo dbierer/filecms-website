@@ -8,7 +8,7 @@
 #
 set -e
 
-REPO_RAW="https://github.com/dbierer/filecms-website/blob/main"
+REPO_RAW = 'https://raw.githubusercontent.com/dbierer/filecms-website/main';
 
 echo "Backing up files that will be replaced ..."
 cp -v templates/super/edit.phtml templates/super/edit.phtml.bak
