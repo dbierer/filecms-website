@@ -1,4 +1,4 @@
-# FileCMS (v0.3.8)
+# FileCMS Website (0.2) / FileCMS (v0.3.14)
 
 ## CK Editor Replacement
 **2026-07-18: Important Update!!!**
@@ -6,10 +6,13 @@ The CK Editor system has been monetized and completely changed.
 We've decided to replace it with Tiny MCE, which is self-hosted here under its free/GPL community license (no CK Editor style monetization or cloud API key required).
 
 If you have an existing site built on this framework, to switch over:
-1. From your project root (the directory containing `composer.json`), run `upgrade_2026_07.sh`. It backs up the affected files, adds the `tinymce/tinymce` composer package, copies its assets into `public/tinymce`, and downloads the updated `templates/super/edit.phtml` and `src/upload.php`.
+1. From your project root (the directory containing `composer.json`, and the `src` and `templates` folders), run:
+```
+./tinymce_upgrade_2026_07.sh
+```
+It backs up the affected files, adds the `tinymce/tinymce` composer package, copies its assets into `public/tinymce`, and downloads the updated `templates/super/edit.phtml` and `src/upload.php`.
 2. In `src/config/config.php`, rename the `SUPER` => `ckeditor` key to `tinymce` (keep the existing `width`/`height` values). This is a manual step since `config.php` is typically customized per site.
 3. If you had customized `edit.phtml` or `upload.php`, reapply your changes using the `.bak` files the script creates as a reference, then delete the `.bak` files.
-
 No changes to `unlikelysource/filecms-core` are required for this upgrade -- everything needed to talk to Tiny MCE's image upload handler lives in this repo's `src/upload.php`.
 
 ## Overview
@@ -23,27 +26,41 @@ Simple PHP framework that builds HTML files from HTML widgets.
 * Includes classes that let you use a CSV file just like a database
 * Very fast and flexible.
 * Once you've got it up and running, just upload HTML snippets and/or modify the configuration file.
-* Works on PHP 7.0 to 8.2
+* Works on PHP 8.0+
 
 License: Apache v2
 
-## Initial Installation
+## Installation
+### Automated Installation
+To perform an automated installation, run the following command, where `/path/to/website` is the directory path to your new website:
+1. Install Composer (see [https://getcomposer.org/doc/00-intro.md](https://getcomposer.org/doc/00-intro.md])
+2. Run the following command:
+```
+composer create-project unlikelysource/filecms-website /path/to/website
+```
+### Manual Installation
 1. Clone the `filecms-website` repository to the project root of your new website.
   * If you have `git` installed run this command from a command prompt / terminal window:
 ```
 git clone https://github.com/dbierer/filecms-website.git /path/to/website
 ```
-  * If you don't have `git` installed, just download the ZIP file from:
-```
-https://github.com/dbierer/filecms-website/archive/refs/heads/main.zip
-```
-  * And unzip into `/path/to/website`
-2. Use composer to install `unlikelysource/filecms-core` and 3rd party source code (e.g. PHPMailer)
+  * If you don't have `git` installed, just download the ZIP file and unzip into `/path/to/website`:
 ```
 cd /path/to/website
+wget https://github.com/dbierer/filecms-website/archive/refs/tags/0.2.zip
+unzip 0.2.zip
+```
+2. Use composer to install `unlikelysource/filecms-core` and 3rd party source code (e.g. PHPMailer)
+```
 wget https://getcomposer.org/download/latest-stable/composer.phar
 php composer.phar self-update
 php composer.phar install
+```
+3. Copy TinyMCE files to `/public/tinymce`
+```
+cd /path/to/website
+mkdir -p public/tinymce
+cp -r vendor/tinymce/tinymce/* public/tinymce
 ```
 
 ## Basic website config
@@ -62,47 +79,34 @@ cd /path/to/website
 php -S localhost:8888 -t public
 ```
 
-## To Run Locally Using Docker and docker-compose
+## To Run Locally Using podman and podman-compose
 
 ### Windows
-Install [Docker Desktop for Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
-
-Open the Power Shell (some commands don't work in the regular command prompt)
-
-To bring the docker container online, run this command:
+Install [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install)
+Open a command prompt and go into WSL
 ```
-cd \path\to\website
-admin up
+wsl
 ```
-To stop the container do this:
-```
-admin down
-```
-To open a command shell into the container:
-```
-admin shell
-```
+If you have multiple Linux clients installed, go into the folder for that client
+* See: [https://learn.microsoft.com/en-us/windows/wsl/basic-commands](https://learn.microsoft.com/en-us/windows/wsl/basic-commands)
+From inside a WSL Linux guest, continue with Linux / Mac instructions.
 
 ### Linux / Mac
-Install Docker + docker-compose:
-* Mac
-  * Install [Docker Desktop for Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac)
-* Linux
-  * Install [Docker](https://docs.docker.com/engine/install/)
-  * Install [docker-compose](https://docs.docker.com/compose/install/#install-compose-on-linux-systems)
-
 Open a terminal window (Terminal Application)
-
-To bring the docker container online, run this command:
+1. Install Podman:
+    * See: [https://podman.io/docs/installation](https://podman.io/docs/installation)
+2. Install podman-compose:
+    * See: [https://deepwiki.com/containers/podman-compose/1.1-installation-guide](https://deepwiki.com/containers/podman-compose/1.1-installation-guide)
+3. To bring the docker container online, run this command:
 ```
 cd /path/to/website
 ./admin.sh up
 ```
-To stop the container do this:
+4. To stop the container do this:
 ```
 ./admin.sh down
 ```
-To open a command shell into the container:
+5. To open a command shell into the container:
 ```
 ./admin.sh shell
 ```

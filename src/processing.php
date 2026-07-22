@@ -15,6 +15,7 @@ if (strpos($uri, $super_url) === 0) {
         case ($uri === $super_url . '/login') :
             header('Content-Type: text/html');
             header('Content-Encoding: compress');
+            Profile::clear_auth();
             $html = new Html($config, $uri, $super_dir);
             echo $html->render();
             exit;
@@ -26,7 +27,7 @@ if (strpos($uri, $super_url) === 0) {
         case ($uri === $super_url . '/transform') :
             // check to see if authenticated
             if (Profile::verify() === FALSE) {
-                Profile::logout();
+                Profile::clear_auth();
                 (Messages::getInstance())->addMessage(Messages::ERROR_AUTH);
                 header('Location: /');
                 exit;
