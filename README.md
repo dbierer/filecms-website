@@ -38,6 +38,7 @@ To perform an automated installation, run the following command, where `/path/to
 ```
 composer create-project unlikelysource/filecms-website /path/to/website
 ```
+This single command clones the repository, installs `unlikelysource/filecms-core` and its dependencies (PHPMailer, TinyMCE), and copies the TinyMCE assets into `public/tinymce` -- no further manual steps are required.
 ### Manual Installation
 1. Clone the `filecms-website` repository to the project root of your new website.
   * If you have `git` installed run this command from a command prompt / terminal window:
@@ -50,18 +51,13 @@ cd /path/to/website
 wget https://github.com/dbierer/filecms-website/archive/refs/tags/0.2.zip
 unzip 0.2.zip
 ```
-2. Use composer to install `unlikelysource/filecms-core` and 3rd party source code (e.g. PHPMailer)
+2. Use composer to install `unlikelysource/filecms-core` and dependencies (e.g. PHPMailer and TinyMCE)
 ```
 wget https://getcomposer.org/download/latest-stable/composer.phar
 php composer.phar self-update
 php composer.phar install
 ```
-3. Copy TinyMCE files to `/public/tinymce`
-```
-cd /path/to/website
-mkdir -p public/tinymce
-cp -r vendor/tinymce/tinymce/* public/tinymce
-```
+`composer install` also copies the TinyMCE assets into `public/tinymce` automatically via the `post-install-cmd` script in `composer.json` -- no separate copy step is needed.
 
 ## Basic website config
 All references are from `/path/to/website`

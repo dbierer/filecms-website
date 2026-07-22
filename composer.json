@@ -27,5 +27,13 @@
         "unlikelysource/filecms-core": ">=0.3.14",
         "phpmailer/phpmailer": ">=6.1",
         "tinymce/tinymce": ">=8.0"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "php bin/copy-tinymce.php"
+        ],
+        "post-update-cmd": [
+            "php bin/copy-tinymce.php"
+        ]
     }
 }
