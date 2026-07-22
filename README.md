@@ -30,7 +30,7 @@ Simple PHP framework that builds HTML files from HTML widgets.
 
 License: Apache v2
 
-## Installation
+## Website Installation
 ### Automated Installation
 To perform an automated installation, run the following command, where `/path/to/website` is the directory path to your new website:
 1. Install Composer (see [https://getcomposer.org/doc/00-intro.md](https://getcomposer.org/doc/00-intro.md])
