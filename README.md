@@ -1,4 +1,4 @@
-# FileCMS Website (0.2) / FileCMS (v0.3.14)
+# FileCMS Website (0.2.1) / FileCMS (v0.3.14)
 
 ## CK Editor Replacement
 **2026-07-18: Important Update!!!**
@@ -48,8 +48,8 @@ git clone https://github.com/dbierer/filecms-website.git /path/to/website
   * If you don't have `git` installed, just download the ZIP file and unzip into `/path/to/website`:
 ```
 cd /path/to/website
-wget https://github.com/dbierer/filecms-website/archive/refs/tags/0.2.zip
-unzip 0.2.zip
+wget https://github.com/dbierer/filecms-website/archive/refs/tags/0.2.1.zip
+unzip 0.2.1.zip
 ```
 2. Use composer to install `unlikelysource/filecms-core` and dependencies (e.g. PHPMailer and TinyMCE)
 ```
