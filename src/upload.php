@@ -25,7 +25,11 @@ if (Profile::verify() === FALSE) {
         header('Location: /');
         exit;
     }
-    $result = $upload->handle('upload');
+    // TinyMCE's built-in image upload handler posts the file under the
+    // field name "file" (not Upload::UPLOAD_FIELD_NAME, which is "upload"
+    // and is used by the separate quick_upload.phtml form)
+    // see: https://www.tiny.cloud/docs/tinymce/latest/upload-images/
+    $result = $upload->handle('file');
 }
 // reshape the FileCMS\Common\File\Upload response into what TinyMCE's
 // built-in image upload handler expects: {"location": url} on success,
